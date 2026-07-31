@@ -1,25 +1,38 @@
-Copyright (c) 2026 Dale DeMott. All rights reserved.
+SPDX-License-Identifier: LicenseRef-Proprietary
 
-PROPRIETARY — NO LICENSE GRANTED
+PROPRIETARY COMMERCIAL SOFTWARE — ALL RIGHTS RESERVED
 
-Secretary HQ is proprietary software. Its source code, database schema,
-prompts, interface design, and all related materials are the exclusive
-property of the copyright holder and are not published in this repository.
+Copyright (c) 2026 Dale DeMott. All Rights Reserved.
 
-This repository contains documentation only. That documentation is made
-available solely so the project can be described, evaluated, and discussed.
+NOTICE: All information concerning Secretary HQ is, and remains, the property
+of Dale DeMott. The intellectual and technical concepts contained herein are
+proprietary to Dale DeMott, may be covered by patents or patents in process,
+and are protected by trade secret and copyright law. The source code, database
+schema, prompts, and interface design of Secretary HQ are unpublished
+confidential works. Dissemination or reproduction of that material is strictly
+forbidden unless prior written permission is obtained from Dale DeMott.
 
-No license, express or implied, is granted by the publication of this
-repository. Without prior written permission from the copyright holder you
-may not:
+Secretary HQ is commercial software. It is licensed, not sold. Any use of the
+software requires a paid commercial license executed in writing with the
+copyright holder. No license, express or implied, by estoppel or otherwise, is
+granted by this repository or by access to it.
 
-  - copy, reproduce, or redistribute the contents of this repository;
-  - create derivative works from them;
-  - use them, in whole or in part, for any commercial purpose;
-  - use them to train, fine-tune, or evaluate machine-learning models.
+Unauthorized copying, duplication, modification, distribution, public display,
+reverse engineering, or use of this software or its materials, via any medium,
+is strictly prohibited. The materials may not be used to train, fine-tune,
+benchmark, or evaluate machine-learning models.
 
-Quoting brief excerpts for the purposes of commentary, review, reporting, or
-academic citation, with attribution, is permitted.
+SCOPE OF THIS REPOSITORY
 
-For licensing, demonstrations, or technical discussion, contact the copyright
-holder.
+This repository contains documentation only. No source code is published here.
+The documentation is made available solely so that the project may be
+described, evaluated, and discussed. Its publication grants no rights of any
+kind. Quoting brief excerpts for commentary, review, news reporting, or
+academic citation, with attribution, is permitted; reproduction of the
+documentation in substantial part is not.
+
+All rights not expressly granted in writing are reserved. Unauthorized use is
+infringement and may be pursued to the full extent of the law.
+
+For commercial licensing, demonstrations, or technical discussion, contact the
+copyright holder.

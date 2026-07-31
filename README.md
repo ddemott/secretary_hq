@@ -133,12 +133,12 @@ Live at **[secretaryhq.com](https://www.secretaryhq.com)**.
 - 60-second polling scheduler, batching due reminders per tick, with retry policy and rate limiting
 - Database-level idempotency: at most one scheduled reminder per appointment per type
 - Delivery-status webhooks recorded per message; sent-communications history view
-- **Self-service links** — token-gated cancel and reschedule pages that need no login; the token itself is the authorization and carries the tenant and appointment scope
+- **Self-service links** — token-gated cancel and reschedule pages that need no login
 - *SMS sending is behind a feature flag pending per-tenant 10DLC brand registration. The agent is told plainly that it cannot text, so it never promises a message it has no means to send.*
 
 ### Data, Audit & Recovery
 
-- **Full data export** (GDPR Art. 20 / CCPA right-to-access) — machine-readable JSON dump of everything a business owns, with credentials and security tokens deliberately excluded
+- **Full data export** (GDPR Art. 15 access / Art. 20 portability, CCPA right-to-know) — machine-readable JSON dump of everything a business owns, with credentials and security tokens deliberately excluded
 - Spreadsheet-shaped CSV exports for customers, appointments, and calls, with RFC-4180 escaping and a formula-injection guard
 - **Owner-facing audit log** — who changed which booking, price, or staff member, and when, recorded by a database-level trigger on appointments, customers, resources, services, and employees
 - **Version history and field-level restore** — per-record version timeline, restore individual fields from a past version, and copy fields between records
@@ -149,11 +149,11 @@ Live at **[secretaryhq.com](https://www.secretaryhq.com)**.
 
 - Row Level Security on every tenant table, with `FORCE ROW LEVEL SECURITY`
 - Tenant isolation enforced in two layers: unauthenticated requests are rejected before any tenant is resolved, and an authenticated caller's supplied tenant must match their token
-- JWT auth (8-hour expiry), bcrypt password hashing, auto-logout on 401, token refresh, password reset, password-rotation checks
+- JWT auth with short-lived sessions, bcrypt password hashing, auto-logout on 401, token refresh, password reset, password-rotation checks
 - Role-based access: owner, admin, front-desk. Front-desk users see primary tabs only and are snapped back if they reach a restricted tab via a stale URL
 - Team-member invitations
 - Super-admin platform dashboard for cross-tenant management and support
-- **Demo mode** — a public, one-click, fully isolated demo business with realistic seeded data, a 30-minute TTL, per-IP rate limiting, a global concurrency cap, and outbound SMS and CRM sync disabled
+- **Demo mode** — a public, one-click, fully isolated demo business with realistic seeded data, an expiring session, abuse rate limiting, and outbound SMS and CRM sync disabled
 
 ### Billing
 
@@ -164,7 +164,7 @@ Live at **[secretaryhq.com](https://www.secretaryhq.com)**.
 ### Platform & Operations
 
 - Shallow liveness and deep readiness endpoints, the latter reporting database reachability and connection-pool saturation
-- Prometheus-style metrics behind a bearer token: HTTP request counts and latency histograms, booking attempts by outcome, tool calls by outcome, sync dispatches, and error events
+- Authenticated Prometheus-style metrics endpoint: HTTP request counts and latency histograms, booking attempts by outcome, tool calls by outcome, sync dispatches, and error events
 - Structured logging with per-request enrichment (service, environment, tenant, call id)
 - Deadlock-prevention pool timeouts and fail-fast connection checkout
 - Graceful shutdown that drains the pool
@@ -250,7 +250,7 @@ Merges to `main` are gated by branch protection behind four green CI jobs (backe
 | ------------------------------------ | ---------------------------------------------------------------- |
 | [`README.md`](README.md)             | This file — what the product does and how it's built             |
 | [`OWNER_GUIDE.md`](OWNER_GUIDE.md)   | Plain-language product tour written for business owners          |
-| [`LICENSE`](LICENSE)                 | Proprietary — all rights reserved, no license granted            |
+| [`LICENSE`](LICENSE)                 | Proprietary commercial — all rights reserved, no license granted |
 
 No source code, tests, migrations, configuration, or infrastructure definitions
 are published here or anywhere else public.
@@ -259,10 +259,15 @@ are published here or anywhere else public.
 
 ## License
 
-**Proprietary. All rights reserved.**
+**Proprietary and commercial. All rights reserved.**
+
+Secretary HQ is commercial software, licensed and not sold. Any use requires a
+paid commercial license executed in writing with the copyright holder.
 
 The documentation in this repository is published for evaluation and discussion
 only. The Secretary HQ software, its source code, database schema, prompts, and
-design are proprietary works and are **not** licensed for copying, reuse,
-redistribution, derivative works, or commercial use. No license — express or
-implied — is granted by the presence of this repository.
+design are proprietary works and are **not** licensed for copying, duplication,
+reuse, redistribution, derivative works, ML training, or use of any kind. No
+license — express or implied — is granted by the presence of this repository.
+
+See [`LICENSE`](LICENSE) for full terms.
