@@ -1,0 +1,8 @@
+# This repository publishes documentation ONLY.
+# Ignore everything by default so source code can never be committed by accident.
+*
+
+# Allow-list: Markdown docs, the license, and this file.
+!*.md
+!LICENSE
+!.gitignore
