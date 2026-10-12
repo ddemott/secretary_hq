@@ -190,15 +190,15 @@ Carrier (PSTN + SIP trunk) --> LiveKit Cloud (SIP ingress)
                                           |
                                 PostgreSQL + pgvector (RLS multi-tenancy)
                                           |
-                                Next.js 14 Dashboard
+                                Next.js 16 Dashboard
 ```
 
 | Layer             | Tech                                                                                                                                                     |
 | ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Voice**         | Telnyx (carrier + SIP trunk), LiveKit Cloud (orchestrator), Deepgram Nova-3 (STT), OpenAI GPT-4.1-mini (voice LLM; 4o-mini for summaries/classification), Deepgram Aura (streaming TTS, per-business voice) |
-| **Backend**       | Fastify 4.x, 29 route modules, JWT auth, Zod validation at every boundary, RLS via a per-request tenant-scoped client |
-| **Frontend**      | Next.js 14 (App Router), React 18, Tailwind CSS 3.4, TypeScript, Lucide icons                                                                            |
-| **Database**      | PostgreSQL + pgvector, 175 migrations, Row Level Security, atomic booking stored procedures with GiST exclusion constraints                               |
+| **Backend**       | Fastify 5.x, 29 route modules, JWT auth, Zod validation at every boundary, RLS via a per-request tenant-scoped client |
+| **Frontend**      | Next.js 16 (App Router), React 18, Tailwind CSS 3.4, TypeScript, Lucide icons                                                                            |
+| **Database**      | PostgreSQL + pgvector, 214 migrations, Row Level Security, atomic booking stored procedures with GiST exclusion constraints                               |
 | **Agent runtime** | LiveKit Agents (Node). Call flow is a **question tree**: host-owned checklist, purpose-selected trees, goodbye gate, per-turn tool selection              |
 | **Async**         | Inline in routes (post-call summaries, calendar sync) plus polling workers for reminders and stale-session reaping                                        |
 | **Billing**       | Stripe Checkout, webhooks, subscription-gate middleware                                                                                                  |
@@ -235,9 +235,9 @@ A few conventions this codebase holds itself to:
 | -------------- | --------------------------------------------------------------------------- |
 | **Phase**      | 13 — Production Readiness                                                   |
 | **Voice AI**   | Live — inbound calls reach the agent; question-tree call flow in production  |
-| **Tests**      | ~3,850 passing (~2,340 backend, ~1,020 dashboard, ~500 agent), zero skips, zero TypeScript errors |
+| **Tests**      | ~5,700 passing (~2,340 backend, ~1,020 dashboard, ~500 agent), zero skips, zero TypeScript errors |
 | **E2E**        | 38 Playwright spec files                                                    |
-| **Migrations** | 175                                                                         |
+| **Migrations** | 214                                                                         |
 | **Business types** | 30, across 6 categories                                                 |
 
 Merges to `main` are gated by branch protection behind four green CI jobs (backend, dashboard, agent, E2E).
