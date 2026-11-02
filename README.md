@@ -1,23 +1,5 @@
 # Secretary HQ
 
-> ### ⚠️ This repository contains no source code — and that is deliberate.
->
-> Secretary HQ is a commercial, proprietary product. This repository exists so
-> that the project can be shown, discussed, and evaluated **without publishing
-> the implementation**. What you see here is documentation only: what the
-> product does, how it is put together, and the engineering standards it holds
-> itself to.
->
-> The source code is closed and remains the exclusive property of the author.
-> It is intentionally withheld to protect copyright and commercial interest —
-> not because there is nothing to show, but because there is a great deal to
-> show and it is not free to take.
->
-> **Interested in the code, a live demo, a technical walkthrough, or licensing?**
-> Open an issue or get in touch — happy to talk.
-
----
-
 **AI receptionist for service businesses.** Answers calls 24/7, books appointments, answers policy questions, captures leads and messages, and logs every interaction — call summaries, transcripts, outcomes, and analytics — to the owner's dashboard. No missed calls, no hold music, no voicemail.
 
 Built for auto & vehicle, beauty & personal care, home services, fitness, food & beverage, and professional-services businesses. **30 business types across 6 categories**, each with its own vocabulary ("Bays / Technicians" for a tire shop, "Chairs / Stylists" for a salon, "Vans / Plumbers" for a plumbing service).
@@ -47,8 +29,12 @@ Live at **[secretaryhq.com](https://www.secretaryhq.com)**.
 - Per-call outcome tracking (booked / transferred / message / no action) with a back-link to the appointment the call created
 - Call-end context recapture — the stored customer snapshot reflects what the call produced, not what was true before it
 - Stale-session reaper so every call ends with a completed record even if the worker dies mid-call
-- Live cold transfer to a human via SIP REFER *(built; awaiting live different-carrier verification)*
+- Transfers the call to a person when the business has set a forward number *(built; the live ring-through has not yet been proven on a real call)*
 - Phone-verification (OTP) flow bound to the individual call, so a proof of possession can never be replayed on a later call
+- **Vertical-specific call intake** — 29 business-type intake flows (what a tire shop needs to know differs from a salon or a plumber), each with its own owner-controllable call checklist preset
+- **Owner-controlled call checklist** — owners turn parts of the checklist off, mark fields optional or required, and reword the approved questions; a next-call dry-run shows what will be asked, listened for, and required. The preset is the ceiling: what it does not include, no setting can add
+- **Per-business question trees** — each business runs its own copy of its question trees, so one business's changes never touch another's
+- **Caller preference recall per business type** — each trade has its own preference list (a preferred technician, a usual service), remembered only against a profile the caller owns *(verified in simulation; not yet proven on a live phone call)*
 
 ### Appointment Booking
 
@@ -69,7 +55,9 @@ Live at **[secretaryhq.com](https://www.secretaryhq.com)**.
 - Two-layer knowledge: live database lookups for facts (pricing, hours, availability, catalog) plus RAG over uploaded documents for policies
 - Document upload — PDF, TXT, DOC, DOCX, MD — chunked, embedded, and retrieved by pgvector cosine similarity
 - 40-pair policy Q&A seeded per business; owners extend, edit, and reword from the dashboard
+- **Ready-made knowledge starters** — a new business gets starter answers for its trade, which the AI does not use until the owner reviews and saves them
 - **Website-scan onboarding** — scans the owner's existing site and proposes knowledge-base entries for review
+- **Automatic website re-scan** — a periodic re-scan of the owner's site keeps knowledge suggestions fresh; it only proposes, never changes answers on its own
 - **Knowledge suggestions queue** — scanned or inferred Q&A pairs land as suggestions with confidence and source URL; the owner accepts or rejects
 - **"Explain this answer" RAG debugger** — shows which knowledge chunks the AI retrieves for a question, their similarity scores, and which ones would actually reach the model in production, so an owner can see *why* the AI answers the way it does
 - Graceful spoken fallback whenever retrieval cannot answer
@@ -92,7 +80,7 @@ Live at **[secretaryhq.com](https://www.secretaryhq.com)**.
 - **Utilization heatmap** — weekday × hour grid of how much staffed time is actually booked
 - Coverage-gap indicators across scheduler, services list, skill map, and setup wizard
 - Interactive 3-column skill relationship map (employee → service → resource) plus a skill matrix
-- 8 UI themes: light, dark, midnight, nord, sunset, forest, high-contrast, solarized
+- 8 UI themes: navy (default), rose, forest, midnight, nord, sunset, high-contrast, solarized
 - Per-business vocabulary applied throughout the UI, resolved through a 3-tier fallback (tenant override → business template → generic)
 - Mobile-responsive layouts
 - First-run tour and a setup-progress pill that tracks what's still missing
@@ -101,8 +89,9 @@ Live at **[secretaryhq.com](https://www.secretaryhq.com)**.
 
 ### CRM & Customer Records
 
-- Full customer profiles with appointment history, call summaries, transcripts, and internal notes
-- Searchable customer list
+- **Contacts tab** — full contact profiles with appointment history, call summaries, transcripts, and internal notes
+- Per-contact call history, and rename history so a contact found under an old name is still found
+- Search across name, email, phone, tags, and former names
 - Customer preferences stored durably and recalled on the next call ("prefers Maria", "last service: oil change")
 - Square CRM bidirectional sync (customers + appointments), with timestamp-based merge and version tracking
 - Google Calendar and Outlook Calendar OAuth integration — appointments auto-sync on create, update, delete, and cancel
@@ -152,13 +141,19 @@ Live at **[secretaryhq.com](https://www.secretaryhq.com)**.
 - JWT auth with short-lived sessions, bcrypt password hashing, auto-logout on 401, token refresh, password reset, password-rotation checks
 - Role-based access: owner, admin, front-desk. Front-desk users see primary tabs only and are snapped back if they reach a restricted tab via a stale URL
 - Team-member invitations
+- Signup email verification, one account per email address
+- Owner-only in-app feedback
+- Public privacy, terms, and data-processing pages, with consent captured at signup
 - Super-admin platform dashboard for cross-tenant management and support
-- **Demo mode** — a public, one-click, fully isolated demo business with realistic seeded data, an expiring session, abuse rate limiting, and outbound SMS and CRM sync disabled
+- **Tutorial** — a public, one-click, fully isolated, self-expiring copy of an auto-shop template business with a week of sample calls, messages, and preferences, an in-place reset, and a guided product tour. Abuse rate limiting is applied, and outbound SMS and CRM sync are disabled
+- **Ready-made business templates** — 30 business types, each copied into a new business at signup: typical services (with no prices — the product never sets a business's prices), bays/chairs/rooms/vans, placeholder staff to rename, and who-does-what links. Customers, calls, appointments, and hours are never copied
 
 ### Billing
 
-- Stripe Checkout subscriptions with a subscription gate — unsubscribed businesses are blocked from paid features
+- Stripe Checkout subscriptions with a card-required 14-day trial and a subscription gate — unsubscribed businesses are blocked from paid features
 - Webhook-driven subscription activation and access gating
+- The whole billing flow (checkout, trial, webhooks, billing portal, cancellation) runs end to end against a built-in Stripe stand-in, so it is tested without a Stripe account. *No real Stripe account is attached yet, and billing is not launched.*
+- Per-call overage billing is built and tested but not enabled
 - Payments for the *business's own customers* are deliberately out of scope — no PCI or payout liability; that stays with the owner's POS
 
 ### Platform & Operations
@@ -169,6 +164,7 @@ Live at **[secretaryhq.com](https://www.secretaryhq.com)**.
 - Deadlock-prevention pool timeouts and fail-fast connection checkout
 - Graceful shutdown that drains the pool
 - Production environment validation — the server refuses to start without its required secrets
+- Sensitive data is scrubbed from logs and error reports, and the dashboard sends standard security headers
 - On-demand simulation harness: health board, CI status, an end-to-end tool journey, an LLM tool-selection evaluation, a RAG accuracy evaluation, a billing check, and a browser-based voice call so the agent can be talked to without a phone
 - A speech-synthesis verification command that opens the real audio socket and demands real audio bytes back — because "it compiles and the tests are green" is not the same as "it makes noise"
 
@@ -196,9 +192,9 @@ Carrier (PSTN + SIP trunk) --> LiveKit Cloud (SIP ingress)
 | Layer             | Tech                                                                                                                                                     |
 | ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Voice**         | Telnyx (carrier + SIP trunk), LiveKit Cloud (orchestrator), Deepgram Nova-3 (STT), OpenAI GPT-4.1-mini (voice LLM; 4o-mini for summaries/classification), Deepgram Aura (streaming TTS, per-business voice) |
-| **Backend**       | Fastify 5.x, 29 route modules, JWT auth, Zod validation at every boundary, RLS via a per-request tenant-scoped client |
+| **Backend**       | Fastify 5.x, JWT auth, Zod validation at every boundary, RLS via a per-request tenant-scoped client |
 | **Frontend**      | Next.js 16 (App Router), React 19, Tailwind CSS 3.4, TypeScript, Lucide icons                                                                            |
-| **Database**      | PostgreSQL + pgvector, 214 migrations, Row Level Security, atomic booking stored procedures with GiST exclusion constraints                               |
+| **Database**      | PostgreSQL + pgvector, 225+ migrations, Row Level Security, atomic booking stored procedures with GiST exclusion constraints                               |
 | **Agent runtime** | LiveKit Agents (Node). Call flow is a **question tree**: host-owned checklist, purpose-selected trees, goodbye gate, per-turn tool selection              |
 | **Async**         | Inline in routes (post-call summaries, calendar sync) plus polling workers for reminders and stale-session reaping                                        |
 | **Billing**       | Stripe Checkout, webhooks, subscription-gate middleware                                                                                                  |
@@ -235,12 +231,12 @@ A few conventions this codebase holds itself to:
 | -------------- | --------------------------------------------------------------------------- |
 | **Phase**      | 13 — Production Readiness                                                   |
 | **Voice AI**   | Live — inbound calls reach the agent; question-tree call flow in production  |
-| **Tests**      | ~5,700 passing, zero skips, zero TypeScript errors |
-| **E2E**        | 38 Playwright spec files                                                    |
-| **Migrations** | 214                                                                         |
+| **Tests**      | 9,100+ unit and integration tests passing (~6,100 backend, ~1,700 dashboard, ~1,300 agent) plus ~280 browser end-to-end tests; one environment-conditional skip, zero TypeScript errors |
+| **E2E**        | 53 Playwright spec files                                                    |
+| **Migrations** | 225+                                                                        |
 | **Business types** | 30, across 6 categories                                                 |
 
-Merges to `main` are gated by branch protection behind four green CI jobs (backend, dashboard, agent, E2E).
+Every change passes a full local gate — lint, format, type-check, the unit suites, and browser end-to-end tests — before it merges.
 
 ---
 
@@ -271,3 +267,21 @@ reuse, redistribution, derivative works, ML training, or use of any kind. No
 license — express or implied — is granted by the presence of this repository.
 
 See [`LICENSE`](LICENSE) for full terms.
+
+---
+
+> ### ⚠️ This repository contains no source code — and that is deliberate.
+>
+> Secretary HQ is a commercial, proprietary product. This repository exists so
+> that the project can be shown, discussed, and evaluated **without publishing
+> the implementation**. What you see here is documentation only: what the
+> product does, how it is put together, and the engineering standards it holds
+> itself to.
+>
+> The source code is closed and remains the exclusive property of the author.
+> It is intentionally withheld to protect copyright and commercial interest —
+> not because there is nothing to show, but because there is a great deal to
+> show and it is not free to take.
+>
+> **Interested in the code, a live demo, a technical walkthrough, or licensing?**
+> Open an issue or get in touch — happy to talk.
